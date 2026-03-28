@@ -34,12 +34,13 @@ type Usage struct {
 }
 
 type Model struct {
-	input   textinput.Model
-	items   []Item
-	matches []Item
-	index   int
-	usage   map[string]Usage
-	mode    string
+	input         textinput.Model
+	items         []Item
+	matches       []Item
+	index         int
+	usage         map[string]Usage
+	mode          string
+	lastFilterKey string // input の値が変わったときだけ選択を先頭に戻す
 }
 
 const usageFile = "/tmp/launcher_usage.json"
@@ -133,14 +134,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, tea.Quit
 
-		case "up":
+		case "up", "ctrl+p":
 			if m.index > 0 {
 				m.index--
 			}
-		case "down":
+			return m, nil
+
+		case "down", "ctrl+n":
 			if m.index < len(m.matches)-1 {
 				m.index++
 			}
+			return m, nil
 		}
 	}
 
@@ -197,7 +201,18 @@ func (m *Model) filter() {
 	})
 
 	m.matches = filtered
-	m.index = 0
+
+	full := m.input.Value()
+	if full != m.lastFilterKey {
+		m.index = 0
+		m.lastFilterKey = full
+	}
+	switch {
+	case len(m.matches) == 0:
+		m.index = 0
+	case m.index >= len(m.matches):
+		m.index = len(m.matches) - 1
+	}
 }
 
 // -------------------- view --------------------
