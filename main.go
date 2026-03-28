@@ -40,7 +40,7 @@ type Model struct {
 	index         int
 	usage         map[string]Usage
 	mode          string
-	lastFilterKey string // input の値が変わったときだけ選択を先頭に戻す
+	lastFilterKey string
 }
 
 const (
@@ -51,8 +51,6 @@ const (
 type yabaiWindow struct {
 	ID int `json:"id"`
 }
-
-// -------------------- init --------------------
 
 func initialModel() Model {
 	ti := textinput.New()
@@ -93,8 +91,6 @@ func defaultCommands() []Item {
 	}
 }
 
-// -------------------- usage --------------------
-
 func loadUsage() map[string]Usage {
 	m := map[string]Usage{}
 	data, err := os.ReadFile(usageFile)
@@ -118,8 +114,6 @@ func (m *Model) updateUsage(key string) {
 	saveUsage(m.usage)
 }
 
-// -------------------- update --------------------
-
 func (m Model) Init() tea.Cmd {
 	return textinput.Blink
 }
@@ -128,7 +122,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 
 	case tea.KeyMsg:
-		// 端末やラッパーによって String() が変わることがあるので Type で判定
 		switch msg.Type {
 		case tea.KeyEscape, tea.KeyCtrlC:
 			return m, tea.Quit
@@ -167,8 +160,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	return m, cmd
 }
-
-// -------------------- logic --------------------
 
 func (m *Model) detectMode(q string) {
 	if strings.HasPrefix(q, ">") {
@@ -225,8 +216,6 @@ func (m *Model) filter() {
 	}
 }
 
-// -------------------- view --------------------
-
 func (m Model) View() string {
 	left := m.input.View() + "\n\n"
 
@@ -270,8 +259,6 @@ func splitView(left, right string) string {
 	return out
 }
 
-// -------------------- warp / 終了時 --------------------
-
 func captureCurrentWindowIDIfRequested() int {
 	if os.Getenv(envCloseWarpFloat) != "1" {
 		return 0
@@ -289,7 +276,6 @@ func captureCurrentWindowIDIfRequested() int {
 	return w.ID
 }
 
-// LAUNCHER_CLOSE_WARP_FLOAT=1 のとき、起動時に記録した window id を閉じる。
 func closeWarpFloatIfRequested(windowID int) {
 	if os.Getenv(envCloseWarpFloat) != "1" {
 		return
@@ -309,8 +295,6 @@ func closeWarpFloatIfRequested(windowID int) {
 		"-e", `tell application "System Events" to keystroke "w" using command down`,
 	).Run()
 }
-
-// -------------------- main --------------------
 
 func main() {
 	windowID := captureCurrentWindowIDIfRequested()
