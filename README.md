@@ -1,5 +1,7 @@
 # Launcher
 
+Goで作る“自作rofi（ランチャー）”
+
 ## 機能
 
 - アプリ自動収集（/Applications）

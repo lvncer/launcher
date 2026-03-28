@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -112,6 +111,10 @@ func (m *Model) updateUsage(key string) {
 }
 
 // -------------------- update --------------------
+
+func (m Model) Init() tea.Cmd {
+	return textinput.Blink
+}
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
