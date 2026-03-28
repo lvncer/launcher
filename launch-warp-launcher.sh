@@ -1,7 +1,7 @@
 #!/bin/bash
 
 APP="Warp"
-CMD="/Users/kihhi/gitrepos/launcher/launcher"
+CMD="LAUNCHER_CLOSE_WARP_FLOAT=1 /Users/kihhi/gitrepos/launcher/launcher"
 
 SCREEN_WIDTH=2560
 SCREEN_HEIGHT=1600

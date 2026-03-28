@@ -43,7 +43,14 @@ type Model struct {
 	lastFilterKey string // input の値が変わったときだけ選択を先頭に戻す
 }
 
-const usageFile = "/tmp/launcher_usage.json"
+const (
+	usageFile         = "/tmp/launcher_usage.json"
+	envCloseWarpFloat = "LAUNCHER_CLOSE_WARP_FLOAT"
+)
+
+type yabaiWindow struct {
+	ID int `json:"id"`
+}
 
 // -------------------- init --------------------
 
@@ -121,10 +128,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 
 	case tea.KeyMsg:
-		switch msg.String() {
-
-		case "ctrl+c", "esc":
+		// 端末やラッパーによって String() が変わることがあるので Type で判定
+		switch msg.Type {
+		case tea.KeyEscape, tea.KeyCtrlC:
 			return m, tea.Quit
+		}
+
+		switch msg.String() {
 
 		case "enter":
 			if len(m.matches) > 0 {
@@ -260,12 +270,54 @@ func splitView(left, right string) string {
 	return out
 }
 
+// -------------------- warp / 終了時 --------------------
+
+func captureCurrentWindowIDIfRequested() int {
+	if os.Getenv(envCloseWarpFloat) != "1" {
+		return 0
+	}
+
+	out, err := exec.Command("yabai", "-m", "query", "--windows", "--window").Output()
+	if err != nil {
+		return 0
+	}
+
+	var w yabaiWindow
+	if err := json.Unmarshal(out, &w); err != nil {
+		return 0
+	}
+	return w.ID
+}
+
+// LAUNCHER_CLOSE_WARP_FLOAT=1 のとき、起動時に記録した window id を閉じる。
+func closeWarpFloatIfRequested(windowID int) {
+	if os.Getenv(envCloseWarpFloat) != "1" {
+		return
+	}
+	if windowID == 0 {
+		return
+	}
+
+	windowIDStr := fmt.Sprintf("%d", windowID)
+
+	if err := exec.Command("yabai", "-m", "window", windowIDStr, "--close").Run(); err == nil {
+		return
+	}
+
+	_ = exec.Command("yabai", "-m", "window", windowIDStr, "--focus").Run()
+	_ = exec.Command("osascript",
+		"-e", `tell application "System Events" to keystroke "w" using command down`,
+	).Run()
+}
+
 // -------------------- main --------------------
 
 func main() {
+	windowID := captureCurrentWindowIDIfRequested()
 	p := tea.NewProgram(initialModel())
 	if err := p.Start(); err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
+	closeWarpFloatIfRequested(windowID)
 }
