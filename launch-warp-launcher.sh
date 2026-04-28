@@ -1,18 +1,21 @@
 #!/bin/bash
 
-set -euo pipefail
-
 APP="Warp"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$SCRIPT_DIR"
+PROJECT_DIR="/Users/kihhi/gitrepos/launcher"
 BINARY="$PROJECT_DIR/launcher"
 CMD="LAUNCHER_CLOSE_WARP_FLOAT=1 $BINARY"
+CONFIG_FILE="$PROJECT_DIR/launcher.config.sh"
+
+SCREEN_WIDTH=2560
+SCREEN_HEIGHT=1600
 
 WIN_WIDTH=640
 WIN_HEIGHT=720
 
-SCREEN_WIDTH=2560
-SCREEN_HEIGHT=1600
+if [ -f "$CONFIG_FILE" ]; then
+  # shellcheck source=/dev/null
+  source "$CONFIG_FILE"
+fi
 
 POS_X=$(( (SCREEN_WIDTH - WIN_WIDTH) / 2 ))
 POS_Y=$(( (SCREEN_HEIGHT - WIN_HEIGHT) / 2 ))

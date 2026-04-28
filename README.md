@@ -8,7 +8,7 @@ Goで作る“自作rofi（ランチャー）”
 - 並び順
   - `Recent`: 直近使った5件を上に表示
   - `Apps`: 直近利用したものも含めて、全アプリを使用履歴に関係なく名前順で表示
-  - `Apps` は一度に最大10件だけ表示し、選択を `↑`/`↓` で動かすとウィンドウ内がスクロールする（Raycast のイメージ）。上下に ▲/▼ と、各行右端の **縦** の `█/░` で位置を表示
+  - `Apps` は一度に最大10件だけ表示し、選択を `↑`/`↓` で動かすとウィンドウ内がスクロールする（Raycast のイメージ）。上下に ▲/▼、右端に縦スクロールバーを表示
 - モード切替（>, /, 通常）
 - プレビュー表示（右側）
 - 実行＆履歴保存
@@ -48,13 +48,17 @@ go test ./... && go build -o launcher .
 
 ## Warp から起動する場合
 
-`launch-warp-launcher.sh` は、起動前に `launcher` をビルドしてから Warp の浮動ウィンドウで実行します。ウィンドウサイズはスクリプト内の `WIN_WIDTH` / `WIN_HEIGHT`（既定は 640×720）で調整できます。狭いとリストが縦に入りきらないので、足りなければ高さを大きくしてください。
+`launch-warp-launcher.sh` は、起動前に `launcher` をビルドしてから Warp の浮動ウィンドウで実行します。ウィンドウサイズは `launcher.config.sh` の `WIN_WIDTH` / `WIN_HEIGHT`（既定は 640×720 程度）で調整できます。狭いとリストが縦に入りきらないので、足りなければ高さを大きくしてください。
 
 ```sh
 ./launch-warp-launcher.sh
 ```
 
 SKHD からこのスクリプトを実行している場合も、起動時に次のビルドが走ります。
+
+```sh
+go build -o /Users/kihhi/gitrepos/launcher/launcher .
+```
 
 そのため、普段は Go のコードを変更したあとに手動ビルドし忘れても、SKHD 経由の起動時に最新化されます。
 
@@ -63,6 +67,7 @@ SKHD からこのスクリプトを実行している場合も、起動時に次
 ## 構成
 
 - `main.go`: エントリーポイント
+- `launcher.config.sh`: Warp 起動時のウィンドウサイズ
 - `internal/launcher/`: ランチャー本体
 - `internal/launcher/usage.go`: 利用履歴と並び順
 - `internal/launcher/model.go`: 入力、検索、キー操作
