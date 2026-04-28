@@ -18,7 +18,7 @@ func (m model) buildLeftLines() []string {
 
 	recentN := recentSectionSize(m.matches, m.usage)
 	if recentN > 0 {
-		lines = append(lines, "Recent")
+		lines = append(lines, "Recent(5 items)")
 		for i := 0; i < recentN; i++ {
 			cur := "  "
 			if m.index == i {
