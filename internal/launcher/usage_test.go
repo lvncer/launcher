@@ -34,7 +34,12 @@ func TestSortByRecentThenName(t *testing.T) {
 		"Finder",
 		"GitHub",
 		"Arc",
+		"Arc",
+		"Calendar",
 		"Docker",
+		"Finder",
+		"GitHub",
+		"Notes",
 		"Slack",
 		"Zoom",
 	}

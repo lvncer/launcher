@@ -17,6 +17,7 @@ type model struct {
 	usage         map[string]usage
 	mode          mode
 	lastFilterKey string
+	appsScroll    int
 }
 
 func newModel() model {
@@ -58,12 +59,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "up", "ctrl+p":
 			if m.index > 0 {
 				m.index--
+				m.ensureAppsScrollVisible()
 			}
 			return m, nil
 
 		case "down", "ctrl+n":
 			if m.index < len(m.matches)-1 {
 				m.index++
+				m.ensureAppsScrollVisible()
 			}
 			return m, nil
 		}
@@ -107,6 +110,8 @@ func (m *model) filter() {
 
 	m.matches = sortByRecentThenName(filtered, m.usage)
 	m.updateIndex()
+	m.clampAppsScroll()
+	m.ensureAppsScrollVisible()
 }
 
 func (m model) matchesMode(item item) bool {
@@ -123,6 +128,7 @@ func (m *model) updateIndex() {
 	full := m.input.Value()
 	if full != m.lastFilterKey {
 		m.index = 0
+		m.appsScroll = 0
 		m.lastFilterKey = full
 	}
 	switch {
@@ -131,4 +137,41 @@ func (m *model) updateIndex() {
 	case m.index >= len(m.matches):
 		m.index = len(m.matches) - 1
 	}
+}
+
+func (m *model) clampAppsScroll() {
+	recent := recentSectionSize(m.matches, m.usage)
+	appCount := len(m.matches) - recent
+	if appCount <= appsVisibleMax {
+		m.appsScroll = 0
+		return
+	}
+	maxScroll := appCount - appsVisibleMax
+	if m.appsScroll > maxScroll {
+		m.appsScroll = maxScroll
+	}
+	if m.appsScroll < 0 {
+		m.appsScroll = 0
+	}
+}
+
+func (m *model) ensureAppsScrollVisible() {
+	recent := recentSectionSize(m.matches, m.usage)
+	n := len(m.matches)
+	if m.index < recent {
+		return
+	}
+	appCount := n - recent
+	if appCount <= appsVisibleMax {
+		m.appsScroll = 0
+		return
+	}
+	rel := m.index - recent
+	if rel < m.appsScroll {
+		m.appsScroll = rel
+	}
+	if rel >= m.appsScroll+appsVisibleMax {
+		m.appsScroll = rel - appsVisibleMax + 1
+	}
+	m.clampAppsScroll()
 }

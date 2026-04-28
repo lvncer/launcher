@@ -38,7 +38,7 @@ func sortByRecentThenName(items []item, usageByTitle map[string]usage) []item {
 		return compareTitle(items[i].title, items[j].title)
 	})
 
-	recent, rest := splitRecentItems(items, usageByTitle)
+	recent := recentItems(items, usageByTitle)
 	sort.SliceStable(recent, func(i, j int) bool {
 		left := usageByTitle[recent[i].title]
 		right := usageByTitle[recent[j].title]
@@ -50,28 +50,24 @@ func sortByRecentThenName(items []item, usageByTitle map[string]usage) []item {
 	})
 
 	if len(recent) > recentLimit {
-		rest = append(rest, recent[recentLimit:]...)
 		recent = recent[:recentLimit]
-		sort.SliceStable(rest, func(i, j int) bool {
-			return compareTitle(rest[i].title, rest[j].title)
-		})
 	}
 
-	return append(recent, rest...)
+	result := make([]item, 0, len(recent)+len(items))
+	result = append(result, recent...)
+	result = append(result, items...)
+	return result
 }
 
-func splitRecentItems(items []item, usageByTitle map[string]usage) ([]item, []item) {
+func recentItems(items []item, usageByTitle map[string]usage) []item {
 	var recent []item
-	var rest []item
 
 	for _, item := range items {
 		if usageByTitle[item.title].Last > 0 {
 			recent = append(recent, item)
-			continue
 		}
-		rest = append(rest, item)
 	}
-	return recent, rest
+	return recent
 }
 
 func compareTitle(left, right string) bool {

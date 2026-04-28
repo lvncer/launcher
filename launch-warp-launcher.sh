@@ -1,16 +1,24 @@
 #!/bin/bash
 
+set -euo pipefail
+
 APP="Warp"
-CMD="LAUNCHER_CLOSE_WARP_FLOAT=1 /Users/kihhi/gitrepos/launcher/launcher"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$SCRIPT_DIR"
+BINARY="$PROJECT_DIR/launcher"
+CMD="LAUNCHER_CLOSE_WARP_FLOAT=1 $BINARY"
+
+WIN_WIDTH=640
+WIN_HEIGHT=720
 
 SCREEN_WIDTH=2560
 SCREEN_HEIGHT=1600
 
-WIN_WIDTH=600
-WIN_HEIGHT=400
-
 POS_X=$(( (SCREEN_WIDTH - WIN_WIDTH) / 2 ))
 POS_Y=$(( (SCREEN_HEIGHT - WIN_HEIGHT) / 2 ))
+
+cd "$PROJECT_DIR" || exit 1
+go build -o "$BINARY" . || exit 1
 
 if ! pgrep -x "$APP" > /dev/null; then
   open -a "$APP"
