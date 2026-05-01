@@ -9,9 +9,10 @@ const (
 )
 
 type item struct {
-	title string
-	cmd   string
-	typ   itemType
+	title    string
+	cmd      string
+	typ      itemType
+	iconPath string
 }
 
 type usage struct {

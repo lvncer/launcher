@@ -24,7 +24,7 @@ func (m model) buildLeftLines() []string {
 			if m.index == i {
 				cur = "> "
 			}
-			lines = append(lines, cur+m.matches[i].title)
+			lines = append(lines, itemDisplayLines(m.matches[i], cur)...)
 		}
 		lines = append(lines, "")
 	}
@@ -55,11 +55,11 @@ func (m model) buildLeftLines() []string {
 		if m.index == gi {
 			cur = "> "
 		}
-		line := cur + m.matches[gi].title
+		itemLines := itemDisplayLines(m.matches[gi], cur)
 		if scrollable {
-			line = fmt.Sprintf("%-36s %s", line, appsScrollBarCell(j-m.appsScroll, visibleEnd-m.appsScroll, m.appsScroll, appTotal))
+			itemLines[0] = fmt.Sprintf("%-36s %s", itemLines[0], appsScrollBarCell(j-m.appsScroll, visibleEnd-m.appsScroll, m.appsScroll, appTotal))
 		}
-		lines = append(lines, line)
+		lines = append(lines, itemLines...)
 	}
 
 	if scrollable {
