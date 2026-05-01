@@ -24,7 +24,7 @@ func (m model) buildLeftLines() []string {
 			if m.index == i {
 				cur = "> "
 			}
-			lines = append(lines, cur+m.matches[i].title)
+			lines = append(lines, itemDisplayLines(m.matches[i], cur)...)
 		}
 		lines = append(lines, "")
 	}
@@ -42,8 +42,12 @@ func (m model) buildLeftLines() []string {
 		lines = append(lines, "Apps")
 	}
 
-	if scrollable && m.appsScroll > 0 {
-		lines = append(lines, fmt.Sprintf("  ▲  %d more above", m.appsScroll))
+	if scrollable {
+		if m.appsScroll > 0 {
+			lines = append(lines, fmt.Sprintf("  ▲  %d more above", m.appsScroll))
+		} else {
+			lines = append(lines, "  ▲  start of list")
+		}
 	}
 
 	for j := m.appsScroll; j < visibleEnd; j++ {
@@ -55,11 +59,8 @@ func (m model) buildLeftLines() []string {
 		if m.index == gi {
 			cur = "> "
 		}
-		line := cur + m.matches[gi].title
-		if scrollable {
-			line = fmt.Sprintf("%-36s %s", line, appsScrollBarCell(j-m.appsScroll, visibleEnd-m.appsScroll, m.appsScroll, appTotal))
-		}
-		lines = append(lines, line)
+		itemLines := itemDisplayLines(m.matches[gi], cur)
+		lines = append(lines, itemLines...)
 	}
 
 	if scrollable {
@@ -71,28 +72,6 @@ func (m model) buildLeftLines() []string {
 		}
 	}
 	return lines
-}
-
-// appsScrollBarCell draws one cell of a vertical scrollbar for the visible Apps rows.
-func appsScrollBarCell(row, visibleRows, fromTop, total int) string {
-	if total <= visibleRows || visibleRows <= 0 {
-		return ""
-	}
-
-	thumb := max(1, (visibleRows*visibleRows+total-1)/total)
-	maxPos := visibleRows - thumb
-	pos := 0
-	if total > visibleRows {
-		pos = fromTop * maxPos / (total - visibleRows)
-		if pos > maxPos {
-			pos = maxPos
-		}
-	}
-
-	if row >= pos && row < pos+thumb {
-		return "│█│"
-	}
-	return "│░│"
 }
 
 func (m model) buildRightLines(leftLineCount int) []string {
