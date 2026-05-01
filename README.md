@@ -2,6 +2,8 @@
 
 Goで作る“自作rofi（ランチャー）”
 
+<video src="/public/2026-05-02.mov" autoplay loop muted playsinline width="100%"></video>
+
 ## 機能
 
 - アプリ自動収集（/Applications）
