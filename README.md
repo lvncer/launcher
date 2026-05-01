@@ -17,7 +17,7 @@ Goで作る“自作rofi（ランチャー）”
 ## 使い方
 
 ```sh
-go run .
+go run ./cmd/launcher
 ```
 
 通常モードでは `/Applications` 配下のアプリを検索します。
@@ -35,7 +35,7 @@ go run .
 
 ```sh
 mkdir -p bin
-go build -o bin/launcher .
+go build -o bin/launcher ./cmd/launcher
 ```
 
 ビルド後に実行します。
@@ -47,7 +47,7 @@ go build -o bin/launcher .
 テストもまとめて確認する場合は次のコマンドです。
 
 ```sh
-go test ./... && mkdir -p bin && go build -o bin/launcher .
+go test ./... && mkdir -p bin && go build -o bin/launcher ./cmd/launcher
 ```
 
 ## Warp から起動する場合
@@ -61,7 +61,7 @@ go test ./... && mkdir -p bin && go build -o bin/launcher .
 SKHD からこのスクリプトを実行している場合も、起動時に次のビルドが走ります。
 
 ```sh
-go build -o /Users/kihhi/gitrepos/launcher/bin/launcher .
+go build -o /Users/kihhi/gitrepos/launcher/bin/launcher ./cmd/launcher
 ```
 
 そのため、普段は Go のコードを変更したあとに手動ビルドし忘れても、SKHD 経由の起動時に最新化されます。
@@ -72,7 +72,7 @@ SKHD から呼ぶ場合は、起動コマンドを `scripts/launch-warp-launcher
 
 ## 構成
 
-- `main.go`: エントリーポイント
+- `cmd/launcher/main.go`: エントリーポイント
 - `scripts/`: 起動用スクリプト
 - `scripts/launcher.config.sh`: Warp 起動時のウィンドウサイズ
 - `bin/`: ビルド成果物（git管理外）

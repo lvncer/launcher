@@ -37,6 +37,7 @@ launcher config
 目的: 開発用ファイル、スクリプト、ビルド成果物、ドキュメントの責務を明確にする。
 
 - `bin/` にビルド成果物を集約し、git管理外にする。
+- `cmd/launcher/` にエントリーポイントを置き、`internal/launcher/` に本体実装を置く。
 - `scripts/` に開発・起動補助スクリプトを集約する。
 - `scripts/launcher.config.sh` はスクリプト専用設定として扱う。
 - README に通常実行、ビルド、Warp/skhd 経由の起動方法を明記する。
@@ -45,7 +46,7 @@ launcher config
 完了条件:
 
 - ルート直下にビルド済みバイナリや一時スクリプトが散らばっていない。
-- `go test ./...` と `go build -o bin/launcher .` が通る。
+- `go test ./...` と `go build -o bin/launcher ./cmd/launcher` が通る。
 - SKHD から呼ぶべきスクリプトパスがREADMEに明記されている。
 
 ## Milestone 2: ランチャー本体を環境依存から切り離す

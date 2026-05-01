@@ -24,7 +24,7 @@ POS_Y=$(( (SCREEN_HEIGHT - WIN_HEIGHT) / 2 ))
 
 cd "$PROJECT_DIR" || exit 1
 mkdir -p "$BINARY_DIR"
-go build -o "$BINARY" . || exit 1
+go build -o "$BINARY" ./cmd/launcher || exit 1
 
 if ! pgrep -x "$APP" > /dev/null; then
   open -a "$APP"
