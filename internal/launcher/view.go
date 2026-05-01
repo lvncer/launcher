@@ -3,6 +3,7 @@ package launcher
 import (
 	"fmt"
 	"strings"
+	"unicode/utf8"
 )
 
 func (m model) View() string {
@@ -14,6 +15,8 @@ func (m model) View() string {
 func (m model) buildLeftLines() []string {
 	var lines []string
 	lines = append(lines, strings.Split(m.input.View(), "\n")...)
+	lines = append(lines, "")
+	lines = append(lines, "Move: ↑ / ↓  (list scrolls with selection)")
 	lines = append(lines, "")
 
 	recentN := recentSectionSize(m.matches, m.usage)
@@ -84,8 +87,6 @@ func (m model) buildRightLines(leftLineCount int) []string {
 		"--- Preview ---",
 		fmt.Sprintf("Type: %v", item.typ),
 		fmt.Sprintf("Cmd: %s", item.cmd),
-		"",
-		"Move: ↑ / ↓  (list scrolls with selection)",
 	}
 	for i, line := range preview {
 		target := i + previewTopPadding
@@ -121,7 +122,56 @@ func splitViewLines(left, right []string) string {
 	var b strings.Builder
 	const leftWidth = 48
 	for i := 0; i < maxH; i++ {
-		_, _ = b.WriteString(fmt.Sprintf("%-*s %s\n", leftWidth, left[i], right[i]))
+		_, _ = b.WriteString(padANSI(left[i], leftWidth) + " " + right[i] + "\n")
 	}
 	return b.String()
+}
+
+func padANSI(s string, width int) string {
+	visible := ansiVisibleWidth(s)
+	if visible >= width {
+		return s
+	}
+	return s + strings.Repeat(" ", width-visible)
+}
+
+func ansiVisibleWidth(s string) int {
+	width := 0
+	for i := 0; i < len(s); {
+		if s[i] == '\x1b' {
+			i = skipANSISequence(s, i)
+			continue
+		}
+		r, size := utf8.DecodeRuneInString(s[i:])
+		if r == utf8.RuneError && size == 0 {
+			break
+		}
+		width += runeDisplayWidth(r)
+		i += size
+	}
+	return width
+}
+
+func skipANSISequence(s string, i int) int {
+	i++
+	if i < len(s) && s[i] == '[' {
+		i++
+		for i < len(s) {
+			if s[i] >= '@' && s[i] <= '~' {
+				return i + 1
+			}
+			i++
+		}
+	}
+	return i
+}
+
+func runeDisplayWidth(r rune) int {
+	if r == '\t' {
+		return 4
+	}
+	if r < 32 {
+		return 0
+	}
+	return 1
 }
