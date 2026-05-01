@@ -52,7 +52,7 @@ go test ./... && mkdir -p bin && go build -o bin/launcher .
 
 ## Warp から起動する場合
 
-`scripts/launch-warp-launcher.sh` は、起動前に `bin/launcher` をビルドしてから Warp の浮動ウィンドウで実行します。ウィンドウサイズは `launcher.config.sh` の `WIN_WIDTH` / `WIN_HEIGHT`（既定は 640×720 程度）で調整できます。狭いとリストが縦に入りきらないので、足りなければ高さを大きくしてください。
+`scripts/launch-warp-launcher.sh` は、起動前に `bin/launcher` をビルドしてから Warp の浮動ウィンドウで実行します。ウィンドウサイズは `scripts/launcher.config.sh` の `WIN_WIDTH` / `WIN_HEIGHT` で調整できます。狭いとリストが縦に入りきらないので、足りなければ高さを大きくしてください。
 
 ```sh
 ./scripts/launch-warp-launcher.sh
@@ -73,8 +73,8 @@ SKHD から呼ぶ場合は、起動コマンドを `scripts/launch-warp-launcher
 ## 構成
 
 - `main.go`: エントリーポイント
-- `launcher.config.sh`: Warp 起動時のウィンドウサイズ
 - `scripts/`: 起動用スクリプト
+- `scripts/launcher.config.sh`: Warp 起動時のウィンドウサイズ
 - `bin/`: ビルド成果物（git管理外）
 - `internal/launcher/`: ランチャー本体
 - `internal/launcher/usage.go`: 利用履歴と並び順
