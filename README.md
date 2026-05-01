@@ -2,7 +2,7 @@
 
 Goで作る“自作rofi（ランチャー）”
 
-<video src="/public/2026-05-02.mov" autoplay loop muted playsinline width="100%"></video>
+https://github.com/user-attachments/assets/c83411c5-a19c-46b1-a556-919a91ade2a3
 
 ## 機能
 
