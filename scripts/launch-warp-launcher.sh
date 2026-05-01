@@ -1,8 +1,10 @@
 #!/bin/bash
 
 APP="Warp"
-PROJECT_DIR="/Users/kihhi/gitrepos/launcher"
-BINARY="$PROJECT_DIR/launcher"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+BINARY_DIR="$PROJECT_DIR/bin"
+BINARY="$BINARY_DIR/launcher"
 CMD="LAUNCHER_CLOSE_WARP_FLOAT=1 $BINARY"
 CONFIG_FILE="$PROJECT_DIR/launcher.config.sh"
 
@@ -21,6 +23,7 @@ POS_X=$(( (SCREEN_WIDTH - WIN_WIDTH) / 2 ))
 POS_Y=$(( (SCREEN_HEIGHT - WIN_HEIGHT) / 2 ))
 
 cd "$PROJECT_DIR" || exit 1
+mkdir -p "$BINARY_DIR"
 go build -o "$BINARY" . || exit 1
 
 if ! pgrep -x "$APP" > /dev/null; then
